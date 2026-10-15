@@ -210,6 +210,11 @@ export function App() {
             />
           )}
         </section>
+        <footer className="mt-10 text-center text-[11px] text-[#819084]">
+          <a href="https://shiodamari.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-inherit">
+            ひとでの潮だまり
+          </a>
+        </footer>
       </main>
       <MobileNav view={view} onNavigate={navigate} />
     </div>
