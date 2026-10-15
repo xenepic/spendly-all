@@ -4,3 +4,4 @@ dist
 # 実際の取引CSVはコミットしない
 *.csv
 !tests/fixtures/*.csv
+*.tsbuildinfo
