@@ -1,0 +1,160 @@
+@import 'tailwindcss';
+
+/* UIモック（paypay-ui-mock/index.html）の配色・寸法をトークン化したもの */
+@theme {
+  --font-sans: system-ui, -apple-system, 'Noto Sans JP', sans-serif;
+  --breakpoint-sm: 32.5625rem; /* 521px: モック @media(max-width:520px) の境界 */
+  --breakpoint-md: 53.8125rem; /* 861px: モック @media(max-width:860px) の境界 */
+
+  --color-ivory: #f7f7f2;
+  --color-ink: #20362e;
+  --color-side: #f0f2ec;
+  --color-side-line: #e5e9e1;
+  --color-brand: #255e48;
+  --color-nav-active: #dce7db;
+  --color-nav-text: #65746a;
+  --color-faint: #839086;
+  --color-line: #e9ede6;
+  --color-line-soft: #f1f3f0;
+  --color-th-line: #e7ece5;
+  --color-control-line: #e5eae2;
+  --color-control-text: #365745;
+  --color-hover: #f1f5f0;
+  --color-hover-soft: #f4f7f3;
+  --color-track: #eaf0e9;
+  --color-bar-track: #edf1ec;
+  --color-legend: #536457;
+  --color-accent: #397d59;
+  --color-accent-soft: #78a38a;
+  --color-focus: #4d9573;
+  --color-up: #b16f4d;
+  --color-down: #3e8463;
+  --color-tag-bg: #eff4ed;
+  --color-tag-text: #508061;
+  --color-mini: #f5f7f3;
+  --color-avatar-bg: #edf3e9;
+  --color-avatar-text: #45785a;
+  --color-pill-active: #dce9df;
+  --color-pill-text: #506658;
+  --color-warn-bg: #f7eee6;
+  --color-warn-text: #9a5f3f;
+
+  --animate-appear: appear 0.2s ease;
+  @keyframes appear {
+    from {
+      opacity: 0.5;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  --animate-fade: fade 0.2s ease;
+  @keyframes fade {
+    from {
+      opacity: 0.35;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    background: var(--color-ivory);
+    color: var(--color-ink);
+  }
+  body {
+    margin: 0;
+    background: var(--color-ivory);
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  h1 {
+    font-size: 25px;
+    margin: 0;
+    letter-spacing: -0.6px;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 14px;
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .card {
+    @apply min-w-0 rounded-[14px] border border-line bg-white p-[15px] sm:p-[19px];
+  }
+  .cardhead {
+    @apply mb-[18px] flex items-center justify-between gap-3;
+  }
+  .caption {
+    @apply text-[11px] text-faint;
+  }
+  .meta {
+    @apply mt-2 text-xs text-[#869288];
+  }
+  .control {
+    @apply rounded-[9px] border border-control-line bg-white px-2 py-2 text-[11px] text-control-text transition-colors duration-150 hover:bg-hover-soft sm:px-[14px] sm:py-[10px] sm:text-xs;
+  }
+  .control-primary {
+    @apply border-brand bg-brand text-white hover:bg-[#1f5440];
+  }
+  .value {
+    @apply mt-[14px] mb-2 text-[25px] font-extrabold tracking-[-1px] tabular-nums md:text-[clamp(19px,2.4vw,30px)];
+  }
+  .sub {
+    @apply text-[11px] text-[#819087];
+  }
+  .pill {
+    @apply rounded-lg border border-[#e6ebe3] bg-white px-[11px] py-2 text-[11px] text-pill-text transition-colors duration-150 hover:bg-hover-soft;
+  }
+  .pill-active {
+    @apply border-pill-active bg-pill-active font-bold text-brand hover:bg-pill-active;
+  }
+  .tag {
+    @apply inline-block rounded-[5px] bg-tag-bg px-[7px] py-1 text-[10px] whitespace-nowrap text-tag-text;
+  }
+  .input {
+    @apply rounded-lg border border-[#e2e9e0] bg-white p-[11px] text-xs text-ink;
+  }
+  .select {
+    @apply appearance-none rounded-lg border border-[#e2e9e0] bg-white py-[9px] pr-7 pl-[11px] text-xs text-ink;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23839086' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  .dot {
+    @apply inline-block h-[9px] w-[9px] shrink-0 rounded-[3px];
+  }
+  .th {
+    @apply border-b border-th-line px-[9px] py-[13px] text-left text-[11px] font-medium whitespace-nowrap text-[#89998d];
+  }
+  .td {
+    @apply border-b border-line-soft px-[9px] py-[13px] text-xs;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

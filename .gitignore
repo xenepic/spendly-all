@@ -1,0 +1,6 @@
+node_modules
+dist
+*.local
+# 実際の取引CSVはコミットしない
+*.csv
+!tests/fixtures/*.csv
