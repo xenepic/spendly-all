@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
-import { DEFAULT_CATEGORIES } from './categories'
+import { DEFAULT_CATEGORIES, DEFAULT_EMOJI } from './categories'
 import type { Account, Category, ImportHistory, Merchant, MerchantRule, Statement, Transaction, TxOverride } from './types'
 
 export class SpendlyDB extends Dexie {
@@ -24,6 +24,13 @@ export class SpendlyDB extends Dexie {
       importHistories: 'id, importedAt',
       accounts: 'id',
       statements: 'id, accountId, paymentMonth',
+    })
+    // v2: カテゴリに絵文字を追加（初期カテゴリは既定の絵文字、追加したカテゴリは汎用の絵文字）
+    this.version(2).upgrade(async (tx) => {
+      const defaults = new Map(DEFAULT_CATEGORIES.map((c) => [c.id, c.emoji]))
+      await tx.table('categories').toCollection().modify((c: Category) => {
+        if (!c.emoji) c.emoji = defaults.get(c.id) ?? DEFAULT_EMOJI
+      })
     })
     this.on('populate', (tx) => {
       tx.table('categories').bulkAdd(DEFAULT_CATEGORIES)

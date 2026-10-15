@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 import { deleteCategory, restoreMerchants, setMerchantsCategory, type MerchantSnapshot } from '../lib/classify'
 import { byMerchant, isSpending } from '../lib/analytics'
-import { EXTRA_COLORS, UNCATEGORIZED } from '../lib/categories'
+import { DEFAULT_EMOJI, EXTRA_COLORS, UNCATEGORIZED } from '../lib/categories'
 import { db, newId } from '../lib/db'
 import { yen } from '../lib/format'
 import { builtinCategoryOf, matchKey, merchantsMatching, resolveMerchant } from '../lib/merchants'
 import type { SpendlyData } from '../hooks/useData'
 import { usePersistentState } from '../hooks/usePersistentState'
 import { NoRows } from '../components/Empty'
+import { EmojiPicker } from '../components/EmojiPicker'
 
 type Tab = 'merchants' | 'categories' | 'rules'
 
@@ -333,6 +334,7 @@ function autoCategory(data: SpendlyData, merchant: string, payees: string[]) {
 
 function CategoriesTab({ data }: { data: SpendlyData }) {
   const [name, setName] = useState('')
+  const [emoji, setEmoji] = useState(DEFAULT_EMOJI)
   const counts = useMemo(() => {
     const m = new Map<string, number>()
     for (const t of data.txs) if (isSpending(t)) m.set(t.categoryId, (m.get(t.categoryId) ?? 0) + 1)
@@ -346,8 +348,9 @@ function CategoriesTab({ data }: { data: SpendlyData }) {
     if (!n || data.categories.some((c) => c.name === n)) return
     const order = Math.max(0, ...data.categories.filter((c) => c.id !== UNCATEGORIZED).map((c) => c.order)) + 1
     const used = new Set(data.categories.map((c) => c.color))
-    await db.categories.add({ id: newId(), name: n, color: EXTRA_COLORS.find((c) => !used.has(c)) ?? EXTRA_COLORS[0], order })
+    await db.categories.add({ id: newId(), name: n, color: EXTRA_COLORS.find((c) => !used.has(c)) ?? EXTRA_COLORS[0], emoji, order })
     setName('')
+    setEmoji(DEFAULT_EMOJI)
   }
 
   const remove = async (id: string, label: string) => {
@@ -360,6 +363,7 @@ function CategoriesTab({ data }: { data: SpendlyData }) {
       <div className="cardhead flex-wrap">
         <h2>カテゴリ</h2>
         <form className="flex gap-2" onSubmit={add}>
+          <EmojiPicker value={emoji} onChange={setEmoji} label="新しいカテゴリの絵文字" />
           <input className="input w-[180px]" placeholder="新しいカテゴリ名" aria-label="新しいカテゴリ名" value={name} onChange={(e) => setName(e.target.value)} />
           <button className="control control-primary" disabled={!name.trim()}>
             追加
@@ -368,7 +372,7 @@ function CategoriesTab({ data }: { data: SpendlyData }) {
       </div>
       {data.categories.map((c) => (
         <div key={c.id} className="flex flex-wrap items-center gap-3 border-b border-line-soft py-[10px]">
-          <span className="dot h-4! w-4! rounded-[5px]!" style={{ background: c.color }} />
+          <EmojiPicker value={c.emoji || DEFAULT_EMOJI} onChange={(e) => db.categories.update(c.id, { emoji: e })} label={`${c.name}の絵文字`} />
           {c.id === UNCATEGORIZED ? (
             <span className="w-[180px] px-[11px] text-xs">{c.name}</span>
           ) : (

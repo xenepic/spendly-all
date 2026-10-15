@@ -312,3 +312,26 @@ describe('カテゴリのルールと一括設定', () => {
     expect(await db.merchantRules.get('b')).toEqual({ id: 'b', pattern: 'B', match: 'contains', merchant: 'Bの店', createdAt: '' })
   })
 })
+
+describe('カテゴリの絵文字（v2）', () => {
+  it('v1のDBを開くと、初期カテゴリには既定の絵文字、追加したカテゴリには汎用の絵文字が付く', async () => {
+    const { default: Dexie } = await import('dexie')
+    const name = 'migrate-v1'
+    const old = new Dexie(name)
+    old.version(1).stores({
+      transactions: 'id, importId, accountId, month, occurredAt, kind, payee', merchants: 'name, categoryId', categories: 'id, order',
+      merchantRules: 'id, merchant', txOverrides: 'txId', importHistories: 'id, importedAt', accounts: 'id', statements: 'id, accountId, paymentMonth',
+    })
+    await old.table('categories').bulkAdd([
+      { id: 'housing', name: '住まい', color: '#6f6250', order: 9 },
+      { id: 'custom', name: '独自', color: '#123456', order: 50 },
+    ])
+    old.close()
+
+    const db2 = new SpendlyDB(name)
+    const cats = new Map((await db2.categories.toArray()).map((c) => [c.id, c]))
+    expect(cats.get('housing')).toMatchObject({ name: '住まい', emoji: '🏠' })
+    expect(cats.get('custom')).toMatchObject({ emoji: '🏷️' })
+    await db2.delete()
+  })
+})
